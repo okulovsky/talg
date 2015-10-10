@@ -1,0 +1,205 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}     
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}%включаем свою кодировку: koi8-r или utf8 в UNIX, cp1251 в Windows
+\newcommand{\Rho}{\mathcal{P}}
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+\usepackage{amsthm,amsmath,calc,tikz}
+\usepackage{enumitem}
+\newtheorem{theorem}{Утверждение}
+\usetikzlibrary{arrows,positioning,calc, backgrounds, automata}
+\begin{document}
+
+\section{Недетерминированная машина Тьюринга}
+{\large На прошлой лекции говорили о детерминированной машине Тьюринга (ДМТ) $(\Sigma, Q, q_{0}, Q_{t}, \delta)$, где $\Sigma$ --- конечный алфавит, $Q$ --- множество состояний, $q_{0}$ --- начальное состояние, $Q_{t}\subseteq Q$ --- конечные, $\delta: \Sigma \times Q \mapsto \Sigma \times Q \times \{\leftarrow, \bullet, \rightarrow \}$. Это была ДМТ, сделаем недетерминированную машину Тьюринга (НМТ). У НМТ все аналогично, но $\delta\subseteq \Sigma \times Q \times \Sigma \times Q \times \{\leftarrow, \bullet, \rightarrow \}$. Теперь }
+\\
+
+\begin{tikzpicture}[node distance=1cm]
+
+% nodes
+\node [draw] (initial_state) {$(q, c)$};
+\node [draw, above right=of initial_state] (first_state) {$(q_{1}, c_{1}, \rightarrow)$};
+\node [draw, below right=of initial_state] (second_state) {$(q_{2}, c_{2}, \leftarrow)$};
+
+% arrows
+\draw [->] (initial_state) edge[bend left=45] (first_state) (initial_state) edge[bend right=45] (second_state);
+\end{tikzpicture}
+\\
+\\
+{\large
+\begin{itemize}
+  \item Есть оракул, который умеет управлять машиной и она ждет его
+  \item При попадании в такую ситуацию мы раздваиваемся на 2 вселенные и вычисляем параллельно. Если хотя бы в одной вселенной удалось, то перемещаемся в нее \ldots
+\end{itemize} }
+
+
+{\large Вопрос: Зачем?
+Вычислительная мощность --- класс задач $(\Rho)$. $\Rho$(ДМТ)$ = \Rho$(НМТ). Докажем это. $\subseteq$ очевидно. $\supseteq$ возьмем универсальную машину Тьюринга (УМТ):}
+\\
+\begin{tikzpicture}
+\node[draw, minimum width=3.3cm,minimum height=1.2cm] (1) {Программа};
+\node[draw, below=0.1cm of 1, minimum width=3.3cm,minimum height=1.2cm] (2) {Текущее слово};
+\node[draw, below=0.1cm of 2, minimum width=3.3cm,minimum height=1.2cm] (3) {Текущее состояние};
+\node[draw, below=0.1cm of 3, minimum width=3.3cm,minimum height=1.2cm] {Буфер};
+\end{tikzpicture}
+\\
+\\
+{\large В буфере находятся конфигурации. \begin{enumerate}
+\item Итерация УМТ
+\item ПУМТ пишет все результирующие конфигурации на 4 ленту. Что-то вроде очереди
+\end{enumerate} }
+
+\section{Другие вычислительные устройства. Нормальный Алгорифм}
+
+{\large Состоит из инструкций вида:
+\begin{align*}
+  s_{1} &\rightarrow t_{1} \\
+  s_{2} &\rightarrow t_{2} \\
+        &\mathrel{\makebox[\widthof{=}]{\vdots}} \\
+  s_{n} &\Rightarrow t_{n}
+\end{align*}}
+\\
+{\large Последняя инструкция является завершающей. Рассмотрим пример. Вход: строка $``abcdef``. a \rightarrow b, bbc \rightarrow x, ef \Rightarrow y$. Шаги: $``bbcdef`` \rightarrow ``xdef`` \Rightarrow ``xdy``$.
+\\
+Задача инкремента. 
+\begin{align*}
+    0\lambda &\Rightarrow 1\lambda \\
+    1\lambda &\Rightarrow 2\lambda \\
+        &\mathrel{\makebox[\widthof{=}]{\vdots}} \\
+    9\lambda &\rightarrow \star 0 \lambda\\
+    0\star &\Rightarrow 1\\
+    1\star &\Rightarrow 2\\
+        &\mathrel{\makebox[\widthof{=}]{\vdots}} \\
+    9\star &\rightarrow \star 0\\
+    \lambda\star &\Rightarrow \lambda 1
+\end{align*}}
+
+{\large Пример с инкрементом. 
+\begin{align*}
+    12 &\Rightarrow 13 \\
+    19 &\rightarrow 1\star 0 \Rightarrow 20 \\
+    199 &\rightarrow 19\star 0 \rightarrow 1\star 00 \rightarrow 200\\
+    99 &\rightarrow 9\star 0 \rightarrow \star 00 \Rightarrow 100
+\end{align*}}
+
+{\large
+\begin{theorem}
+$$\Rho(NA) = \Rho(MT)$$
+\end{theorem}
+
+\begin{proof}
+В сторону $\subseteq$. $p_{1}: s_{1} \rightarrow t_{1}, p_{2}: \rightarrow t_{2}, \dots p_{n}.$ Построим серию МТ $m_{i}$ (конкретная подпрограмма), где каждая, во-первых, начиная с текущей позиции проверяет, что префикс $= s_{i}$, если нет, то переходит в в $q_{i}^N$. Во-вторых, если удачно, то производит замену $s_{i}$ на $t_{i}$ и переходит в $q_{i}^T$, если $p_{i}$ --- завершающее, иначе $q_{i}^y$. Начало $q_{i}^0$. МТ $= (Q, \Sigma, q_{0}, Q_{t}, \delta), Q = Q^{m_{1}} \cup Q^{m_{2}} \cup \dots \cup Q^{'}$. $Q^{m_{1}} = \{q^0_{1}, q^N_{1}, q^T_{1}, q^Y_{1}, \dots \}$.
+\\
+
+\begin{tikzpicture}[>=latex',shorten >=1pt,node distance=2.3cm,on grid,auto] % надеюсь, здесь понятно, что предполагаются на рисунке все q_{0}...q_{n}, так как непонятно, как это изобразить
+  \node[state,initial by arrow, initial text={начало}] (s) {$q^0$}; % начальное
+  \node[state, initial by arrow, initial text={шаг вправо}] (e) [below=of s] {}; % сюда по эпсилон идем; здесь можно эту стрелку убрать с "шаг вправо"
+
+  % первый слой, в который по m_{i} идем из начального
+  \node[state] (q0-1) [above right=of s, xshift=0.5cm, yshift=0.1cm] {$q^0_{1}$};
+  %\node[state] (q0-2) [below =of q0-1] {$q^0_{2}$};
+  %\node[state] (q0-i) [right=of s, xshift=-0.5cm] {$q^0_{i}$};
+  \node[state] (q0-n) [below right=of s, xshift=0.5cm, yshift=-1cm] {$q^0_{n}$};
+
+  % второй слой, в которой идем из состояний q^0_{i}
+  \node[state] (qi-1) [right=of q0-1, xshift=-0.5cm] {};
+  %\node[state] (qi-i) [right=of q0-i, xshift=-0.6cm] {};
+  \node[state] (qi-n) [right=of q0-n, xshift=-0.5cm] {};
+
+  % третий слой
+  % верхний
+  \node[state] (qt-1) [above right=of qi-1, yshift=+1cm] {$q^{T}_{1}$};    
+  \node[state] (qn-1) [below=of qt-1,yshift=+1cm] {$q^{N}_{1}$};
+  \node[state] (qy-1u) [below=of qn-1, yshift=+1cm] {$q^{Y}_{1}$}; % верхний
+  % нижний
+  \node[state] (qt-n) [right=of qi-n, xshift=-0.3cm] {$q^{T}_{n}$};
+  \node[state] (qn-n) [below=of qt-n, yshift=0.8cm] {$q^{N}_{n}$};
+  \node[state] (qy-1l) [below=of qn-n, yshift=0.5cm] {$q^{Y}_{1}$}; % нижний
+
+  % четвертый слой
+  \node[state] (qt) [above right=of qt-1, yshift=-3cm, xshift=+1.5cm] {$q^{T}$};  
+  \node[state, initial by arrow, initial where=right, initial text={перемотать}, yshift=-1.5cm] (qback) [below=of qt] {};
+  \node[state] (qm) [below=of qback, yshift=-2cm] {$q_{m}$};
+
+  % из начального по эпсилон и обратно под ним
+  \path[->] (e) edge [bend right] node {$\epsilon$} (s);
+  \path[->] (s) edge [bend right] node {$\epsilon$} (e);
+  % из q_{0} в первый слой
+  \path[->] (s) edge node {$m_{1}$} (q0-1);
+  %\path[->] (s) edge node {$m_{i}$} (q0-i);
+  \path[->] (s) edge node {$m_{n}$} (q0-n);
+
+  % из первого слоя во второй
+  \path[->] (q0-1) edge node {$\dots$} (qi-1);
+  %\path[->] (q0-i) edge node {$\dots$} (qi-i);
+  \path[->] (q0-n) edge node {$\dots$} (qi-n);
+
+  % здесь делаем точки между q0-1 и q0-n
+  \path (q0-1) -- (q0-n) node [black, font=\Huge, midway, sloped] {$\dots$};
+
+  % из второго слоя в третий
+  % верхняя часть
+  \path[->] (qi-1) edge node {} (qt-1);
+  \path[->] (qi-1) edge node {} (qn-1);  
+  \path[->] (qi-1) edge node {} (qy-1u);
+  % нижняя
+  \path[->] (qi-n) edge node {} (qt-n);
+  \path[->] (qi-n) edge node {} (qn-n);
+  \path[->] (qi-n) edge node {} (qy-1l);
+
+  % из третьего слоя в четвертый
+  \path[->] (qm) edge [loop below] node {} (qm);
+  \path[->] (qt-1) edge node {} (qt);
+  \path[->] (qt-n) edge node {} (qt);
+  \path[->] (qn-1) edge node {} (qm);
+  \path[->] (qn-n) edge node {} (qm);
+  \path[->] (qy-1u) edge node {} (qback);
+  \path[->] (qy-1l) edge node {} (qback);
+  %\path[->] (qback) edge [bend right] node {} (s);
+  \draw [->,thick,red] (qback) edge node {} (s);
+
+
+\end{tikzpicture}
+
+В сторону $\supseteq$. МТ: $\{(q_{1}, s_{1}, q^{'}_{1}, s^{'}_{1}, m_{1}) = \delta_{1}, \dots, \delta_{n} \}$. Построим алгорифм. 
+\begin{enumerate}
+\item $\lambda x \rightarrow \dashv [q_{0}] x, x \in \Sigma$. ($\dashv$ --- левый упор. $[q_{0}]$ --- подразумевается один символ. В записи указали и положение, и состояние). Перед первым символом состояние $q_{0}$.
+\item \begin{enumerate}
+    \item $\forall \delta_{i}$, где $m_{i} = \bullet$ будет $[q_{i}]s_{i} \rightarrow [q_{i}]^{'}s^{'}_{i}$
+    \item $\forall \delta_{i}, m_{i} =  \rightarrow$ будет $[q_{i}]s_{i} \rightarrow s^{'}_{i}[q^{'}_{i}]$
+    \item $\forall i: m_{i} =  \leftarrow$ будет $x[q_{i}]s_{i} \rightarrow [q^{'}_{i}]x s^{'}_{i} \forall x \in \Sigma^{'}$
+  \end{enumerate}
+\item $\forall q \in Q_{t}, [q] \Rightarrow \lambda$
+\end{enumerate}
+
+\end{proof}
+}
+
+
+\section{Машина Минского}
+{\large Машина умеет:
+\begin{enumerate}
+\item Увеличивать число на 1
+\item Уменьшать число на 1 и сравнивать его с 0
+\item завершаться 
+\end{enumerate}
+$(Q, R_{1}, \dots, R_{n})$, где $Q$ --- состояния, $R_{1}, \dots, R_{n}$ --- числовые регистры.
+\begin{enumerate}[label=(\roman*)]
+\item $q_{i}: R_{j} \gets R_{j} + 1$, goto $q_{k}$
+\item $q_{i}: R_{j} \gets R_{j} - 1  ?  q_{y}:q_{n} $
+\item $q_{i}:$ stop
+\end{enumerate}
+
+Задача сложения
+\begin{align*}
+    R_{1} &:= R_{1} + R_{2} \\
+    q_{0} &: R_{2} \gets R_{2} - 1  ?  q_{1}:q_{2} \\
+    q_{1} &: R_{1} \gets R_{1} + 1, q_{0}\\
+    q_{2} &: R_{1} \gets R_{1} + 1, q_{3}\\
+    q_{3} &: STOP\\
+\end{align*}}
+
+
+\end{document}
