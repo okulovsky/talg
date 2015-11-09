@@ -1,0 +1,399 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,thmtools}
+
+\newcommand{\eqnref}[1]{\eqref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\lemref}[1]{Lemma \ref{#1}}
+\newcommand{\corref}[1]{Corollary \ref{#1}}
+\newcommand{\thmref}[1]{Theorem \ref{#1}}
+% Real numbers
+\newcommand{\Real}[1]{\mathbb{R}^{#1}}
+% Complex numbers
+\newcommand{\Complex}[1]{\mathbb{C}^{#1}}
+% Integers
+\newcommand{\Integer}[1]{\mathbb{Z}^{#1}}
+% Rank operator
+\DeclareMathOperator{\rank}{\textnormal{rank}}
+% Vec operator
+\newcommand{\vecop}{\textnormal{vec}}
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+% Trace
+\newcommand{\trace}{\textnormal{tr}}
+% Range
+\newcommand{\range}{\textnormal{range}}
+% Partial derivative
+\newcommand{\pd}[2]{\dfrac{\partial #1}{\partial #2}}
+% Complete derivative
+\newcommand{\dd}[2]{\dfrac{d #1}{d #2}}
+% Complete derivative, second order
+\newcommand{\dds}[2]{\dfrac{d^2 #1}{d {#2}^2}}
+% Limit to N / N
+\newcommand{\limover}[1]{\lim_{#1 \rightarrow \infty} \dfrac{1}{#1}}
+% Display style sum
+\newcommand{\dsum}{\displaystyle\sum}
+% arg min and arg max
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg~max}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg~min}}}
+%---------------------------------------------------------------------------
+% Create theorem without number
+\declaretheoremstyle[headfont=\bfseries,notefont=\bfseries,bodyfont=\itshape,notebraces={}{},headpunct={},postheadspace=1em]{mystyle}
+\declaretheorem[style=mystyle,numbered=no,name=Теорема]{thm-hand}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{cor}[thm]{Следствие}
+\newtheorem{conj}[thm]{Предположение}
+\theoremstyle{definition}
+\newtheorem{dfn}[thm]{Определение}
+\newtheorem{Q}[thm]{Вопрос}
+\newtheorem{prob}[thm]{Problem}
+\newtheorem{prob-rus}[thm]{Задача}
+\newtheorem{A}[thm]{Ответ}
+\newtheorem{rmk}[thm]{Замечание}
+\newtheorem{ex}[thm]{Пример}
+
+\usetheme{Warsaw}
+
+\title{Лекция 7}
+\author{Подготовил Миронов Данил}
+
+\begin{document}
+\date{2.11.15}
+
+\frame{\titlepage
+\begin{center}
+Теория алгоритмов 2015
+\end{center}
+}
+
+
+
+\section{Задача}
+\begin{frame}
+	\frametitle{Promlem 1}
+	\begin{prob}[1]
+		По данным МТ: $M$ и $X$ определить $\exists$ ? $c$ : $|c|<p(|x|)$ : $M(x,c)=1$, где $p$ - известный полином \\
+		При условии, что $M$ - ДМТ, работающая за полином \\
+		В этом случае $P_1$ будет $NP$ полной задачей
+	\end{prob}
+	\begin{Q}
+	    Почему эта задача в классе $NP$ ?	
+	\end{Q}
+\end{frame}
+
+\begin{frame}
+	\begin{Q}
+	    Что такое класс $NP$ ?	
+	\end{Q}
+	\begin{A}
+	    Класс задач, которые решаются на недетерминированнной МТ за полиномиальное время	
+	\end{A}
+	Определение плохое, так как НДМТ это не очень понятное свойство.\\
+	Используем второе определение
+\end{frame}
+
+\begin{frame}
+    \begin{dfn}
+        $L$ - $NP$ язык, если $\exists$ $M_L$ - ДМТ, работающая за полином такая, что если некое слово $w\in L$, то $\exists c$, что $|c|\leqq p(|w|)$ и $M_L(w,c)=1$, где $c$ - сертификат
+    \end{dfn}
+    Это означает, что очень легко проверить, что некое слово принадлежит языку $L$. То есть если нам предъявят сертификат, то мы за полиномиальное время убедимся, что условие задачи лежит в $L$ 
+\end{frame}
+
+\begin{frame}
+	\begin{ex}
+	    Язык всех графов, содержащих гамильтонов цикл. \\
+	    Тогда $w$ - какой-то граф \\
+	    Говорим, что существует такая процедура сертификации, что граф будет принадлежать множеству всех графов, содержащих гамильтонов цикл, если существует некий сертификат полиномиальной длинны такой, что мой сертификат скажет - ОК \\
+	    Таким сертификатом является собственно гамильтонов цикл
+	\end{ex}
+\end{frame}
+
+\begin{frame}
+	\begin{ex}[Продолжение]
+	    Как мы понимаем, что гамильтонов цикл - это $NP$ язык ? \\
+	    Мы знаем, что есть сертифицирующая машина, которая принимает граф и цикл. Затем убеждается, что этот цикл лежит в графе. \\
+	    Дальше для каждого графа, который содержит гамильтонов цикл мы можем найти такой сертификат, что эта МТ скажет - ОК. \\
+	    Если в графе есть гамильтонов цикл, то это будет сам гамильтонов цикл \\
+	    Если нет гамильтонового цикла, то мы никак не сможем заставить эту машину сказать - ДА. \\
+	    То есть такая сертифицирующая машина существует и поэтому утверждаем, что $L$ - $NP$ язык 
+	\end{ex}
+\end{frame}
+
+\begin{frame}
+	\begin{ex}[Итог]
+	    Для $NP$ языков существует простая (полиномиальная) система проверки вхождения в этот язык на основании каких-то дополнительных данных.
+	\end{ex}
+\end{frame}
+
+\begin{frame}
+	\begin{Q}
+	    Почему $P_1$ это $NP$ язык ?
+	\end{Q}
+\end{frame}
+
+\begin{frame}
+    Разбираемся по порядку
+	\begin{Q}
+	    Что здесь является словом языка ? \\
+	    Что является сертификатом ?	
+	\end{Q}
+
+	\begin{A}
+	    На входе есть $(M,x)$, нужно уметь проверять, что $(M,x)\in L_{p_1}$ \\
+	    Язык $L_{p_1}$ - язык пар $(M,x)$, такой, что $\exists c$, такое, что $M(x,c)=1$, где $M$ - МТ, $c$ - некий вход \\
+	    Cо всеми сопутствущими ограничениями на полиномиальность. \\
+	    Сертификатом здесь будет $c$ \\
+	    Так как в $L_{p_1}$ входит пара $(M,x)$ для которой $\exists c$ \\ Если нам предъявят $c$ то мы сможем убедиться, что пара в языке
+	\end{A}
+\end{frame}
+
+\begin{frame}
+	\begin{Q}
+	    Какая у нас машина для процедуры сертификации ?
+	\end{Q}
+	\begin{A}
+	    Машина, которая производит сертификацию вхождения слова в язык проблемы $P_1$ \\
+	    У этой машины два аргумента: \\
+	        - кандидат на слово языка $M_{L_p}$ \\
+	        - сертификат $c$ \\
+	  	Она должна отвечать ДА или НЕТ
+	\end{A}
+\end{frame}
+
+\begin{frame}
+	\begin{dfn}
+	    Язык называется $NP$ полным, если \\
+	    - лежит в классе $NP$ \\
+	    - $NP$ трудный	
+	\end{dfn}
+
+	\begin{dfn}
+		Язык $NP$ трудный, когда любая проблема из класса $NP$ сводится к нему по Карпу
+	\end{dfn}
+	
+	\begin{dfn}
+	    Сводимость по Карпу \\
+	    $L_1\rightsquigarrow_c L_2$, если $\exists f$ такая, что $f(w)\in L_2 \Leftrightarrow w \in L_1$ \\
+	    $f$ - полиномиальная функция, которая переводит слова, которые мы проверяем на принадлежность к $L_1$ в другие слова, которые мы проверяем на принадлежность к $L_2$ и образ слова принадлежит $L_2$ тогда и только тогда, когда само слово принадлежит $L_1$ 
+	\end{dfn}
+\end{frame}
+
+\begin{frame}
+	\begin{Q}
+	    Почему $L_{p_1}$ $NP$ трудный ?
+	\end{Q}
+	\begin{A}
+	    Пусть $L$ - какой-то $NP$ язык \\
+	    Как $L$ свести по Карпу к языку $L_{p_1}$ \\
+	    Нужно построить $f$ - полиномиальную функцию \\
+	    $L$ - $NP$ язык ${\overset{\mbox{Опр}}\Rightarrow}$ $\exists M_L$ такая, что \\
+	    - работает полиномиальное время \\
+	    - $w \in L \Leftrightarrow \exists c : M_L(w,c)=1$ \\
+	    $w$ превращаем в пару $(M_L, w)$ \\
+	    Получаем формулировку $P_1$ задачи \\
+	\end{A}
+\end{frame}
+
+\begin{frame}
+	\begin{Q}
+	    Как проверить, что $w \in L \Leftrightarrow (M_L,w) \in P_1$ ?	
+	\end{Q}
+	\begin{A}
+	    $\Rightarrow$ \\
+	    Известно, что $w \in L \Leftrightarrow \exists c: M_L(w,c)=1 \Rightarrow (M_L,w) \in P_1 \Rightarrow (M_L,w) \in L_{P_1}$\\
+	    $\Leftarrow$ \\
+	    Все переходы обратимы \\
+	    $w \in L {\underset{\mbox{Опр $NP$}}\Leftrightarrow} \exists c: M_L(w,c)=1 {\underset{\mbox{Опр $P_1$}}\Leftrightarrow} (M_L,w) \in P_1 \Leftrightarrow (M_L,w) \in L_{P_1}$
+	\end{A}
+\end{frame}
+
+\begin{frame}
+	\begin{rmk}
+	    Есть задачи, которые являются $NP$ полными и имеют естественную формулировку. 	
+	\end{rmk}
+\end{frame}
+
+\begin{frame}
+	\begin{prob-rus}[SAT (выполнимости)]
+	    Язык булевых формул, которые удовлетворимы \linebreak
+	    Пусть есть $x_1, \dots x_n$ - булевы переменные \linebreak
+	    И набор дизъюнкций вида \linebreak
+		$$
+	    \begin{array}{l l}
+	        	a_{11}(x_1) \vee a_{12}(x_2) & \vee \dots \vee a_{1n}(x_n) \\
+	    	    &\vdots \\
+	    	    a_{m1}(x_1) \vee a_{m2}(x_2) & \vee \dots \vee a_{mn}(x_n)
+	    \end{array} 
+		$$
+	    Где 
+
+	    \begin{center}
+	    	$a_{ij} = \begin{cases} \neg & \\ \epsilon & \\ 0 & \end{cases}$
+	    \end{center} 
+
+	    Таким образом порождаем $m$ элементарных дизъюнктов
+	\end{prob-rus}
+\end{frame}
+
+\begin{frame}
+	\begin{rmk}
+	    Дизъюнкты выполнимы $\Leftrightarrow \exists x_1 \dots x_n$, такие, что все они обращаются в истину
+	\end{rmk}
+	\begin{ex}
+	    \begin{equation*}
+	    	\begin{split}
+	    		x_1 & \vee \neg x_2 \vee x_3 \\
+	    		& \neg x_1 \vee \neg x_3 \\
+	    		& x_1 \vee \neg x_2
+	    	\end{split}
+	    \end{equation*} \\
+	    При $x_1=1$ $x_2=1$ $x_3=0$ получаем тожд. истинное высказывание, значит система выполнима
+	\end{ex}
+\end{frame}
+
+\begin{frame}
+	\begin{rmk}
+	    Дизъюнкты выполнимы $\Leftrightarrow$ конъюнкция дизъюнктов равна $1$ при некоторых $x_1 \dots x_n$
+	\end{rmk}
+	\begin{rmk}
+	    SAT - язык выполнимых КНФ
+	\end{rmk}
+	\begin{ex}[Невыполнимая КНФ]
+	    \begin{equation*}
+	    	\begin{split}
+	    		& x_1\\
+	    		\& & \\
+	    		& \neg x_1 \vee \neg x_2 \\
+	    		\& & \\
+	    		& \neg x_2
+	    	\end{split}
+	    \end{equation*} \\
+	\end{ex}
+\end{frame}
+
+\begin{frame}
+	\begin{prob-rus}
+	    Докажем, что SAT - $NP$ полный язык	(Теорема Кука)
+	\end{prob-rus}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}
+		$1)$ Покажем, что SAT лежит в $NP$ \\
+		Нужно убедиться, что можно полиномиально быстро проверять решение. Здесь сертификат - это набор $x_1 \dots x_n$. Когда мы видим набор и видим формулу, мы можем сразу понять превращает ли он ее в истину.
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}
+		$2)$ Покажем, что каждая задача из $NP$ сводится к нашей \\
+		Уже показали, что каждая задача из $NP$ сводится к $P_1$ \\
+		То есть $\forall L \in$ $NP$ $L \rightsquigarrow_c P_1$ \\
+		Сводимость по Карпу это транзитивное отношение \\
+		(У нас будет композиция полиномиально вычислимых функций, которая полиномиально вычислима) \\
+		Нужно доказать, что $P_1 \rightsquigarrow_c SAT$ \\
+		Нужно для $(M,x)$ построить некую булеву формулу $B$ КНФ такую, что $B$ выполнима $\Leftrightarrow \exists c:M(x,c)=1$
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}[Продолжение]
+		Для доказательства приненим технику, которую мы использовали в доказательстве теоремы Геделя \\
+		Сделаем булеву формулу, которая эмулирует работу МТ, поэтому она будет выполнима тогда, когда остановится исходная МТ. \\
+		У нас будет тотальная, бинарная МТ \\
+		$1.$ Бинарная: алфавит состоит из $1$ и $0$ $\Rightarrow x,c$ - битовые строки\\
+		$2.$ Тотальная: для $\forall q \in Q$
+		\begin{equation}
+	    	\begin{split}
+	    		q, 1 \Rightarrow q^1,s^1,d^1 \\
+	    		q, 0 \Rightarrow q^0,s^0,d^0
+	    	\end{split}
+	    \end{equation}
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{rmk}
+	    $*$ Для понятного объяснения далее считаем \\
+	    Чтобы записать конкретные формулы в дальнейшем
+	    \begin{equation*}
+	    	\begin{split}
+	    		q, 1 \Rightarrow q^1,0,\leftarrow \\
+	    		q, 0 \Rightarrow q^0,s^0,.
+	    	\end{split}
+	    \end{equation*} \\
+	\end{rmk}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}[Продолжение]
+	    МТ бинарная, тотальная и полиномиально ограничена. \\
+	    Ее память тоже ограничена полиномом \\
+	    Если захотим хранить состояния машины за все время работы, то это все равно будет полином \\
+	    Чтобы построить булеву функцию, определим, какие переменные будут в нее входить: \\
+	    $M_{ij}$ - состояние $i$-ой ячейки памяти на такте $j$ \\
+	    $Q_{ij}=1 \Leftrightarrow$ МТ находилась в состоянии $i$ на такте $j$ \\
+	    $P_{ij}=1 \Leftrightarrow$ МТ на такте $j$ смотрела на позицию $i$
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}[Продолжение]
+	    Теперь хотим переписать \itshape{(1)} \normalfont{} как булеву функцию. \\
+	    Берем состояние МТ $q$ и две инструкции, которые она выполняет, находясь в этом состоянии \\
+	    Для каждого $j,i$ запишем формулы, где $i$ - индекс пробегающий ленту, $j$ - индекс, пробегающий время \\
+	    $Q_{q,j} \& P_{i,j} \& M_{i,j} \rightarrow Q_{q^1,j+1} \& P_{i-1,j} \& \neg M_{i,j+1}$ \\
+	    Время ограничено полиномом, память ограничена полиномом, количество состояний тоже ограничено полиномом, поэтому это все еще будет полином \\
+	    Нужно еще добавить условия, чтобы это было осмысленно с точки зрения МТ: \\
+	    - В каждый момент времени МТ может находиться только в одном состоянии \\
+	    - В каждый момент времени МТ может смотреть только в одну ячейку памяти
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}[Продолжение]
+	    Сложная часть еще состоит в том, чтобы показать, что эти КНФ имеют полиномиальный размер. (Иногда, когда мы приводим к КНФ формула может приобрести полиномиальный размер) \\
+	    \begin{center}
+	    	''В данном случае верьте мне, они все будут полиномиальны''
+	    \end{center}
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{proof}[Продолжение]
+	    Как же с помощью построенного решить исходную задачу ? \\
+	    $3.$ Если $M(x,c)=1$, то $\exists t$, что с момента времени $t$ $M$ находится в состоянии $\bar{q}$ \\
+	    $4.$ Вход $M$ - это просто строка $xc$. Предполагаем, что есть какой-то внутренний формат, чтобы их разделить \\
+	    Добавляем дополнительные формулы, так как хотим, чтобы полученная формула была не просто эмуляцией МТ, но и удовлетворяла начальному условию: \\
+	    - $M_{i,0}=x_i, i<|x|$ \\
+	    - $Q_{\bar{q}, D}$, где $D$ - общее количество тактов работы машины, которую мы эмулируем \\
+	    Это все, так как свободными переменными останутся только переменные $M_{i,|x+1|}, \dots$
+	\end{proof}
+\end{frame}
+
+\begin{frame}
+	\begin{cor}
+	    Ограниченную по времени МТ можно смоделировать одной булевой формулой 	
+	\end{cor}
+	\begin{cor}
+	    Задача SAT - $NP$ - полна  	
+	\end{cor}
+\end{frame}
+
+\begin{frame}
+	\begin{rmk}
+	    Многие задачи теории сложности формулируются на языке булевых формул	
+	\end{rmk}
+
+\end{frame}
+
+
+\end{document}
