@@ -1,0 +1,232 @@
+\documentclass{beamer}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{hyperref}
+\hypersetup{unicode=true}
+
+
+%Графы
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\usepackage{tikz-qtree,tikz-qtree-compat}
+
+
+\usepackage{tkz-graph}
+\tikzset{
+  EdgeStyle/.append style = {-} }
+%Графы
+
+
+%Стили для опеределений
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\theoremstyle{definition}
+\newtheorem{defn}{Определение}
+%Стили для опеределений
+
+
+
+\usetheme{Singapore}
+
+\title{Теория Алгоритмов}
+\subtitle{Лекция 8}
+\date{Екатеринбург, 2015}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Оглавление}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Оглавление}
+  \tableofcontents
+\end{frame}
+
+\section{Лекция 7}
+\subsection{Задача SAT}
+\begin{frame}{Формулировка}
+	\begin{defn}
+		Проверить, является ли данная булева формула выполнимой
+	\end{defn}
+\end{frame}
+
+\begin{frame}{Доказательство NP-полноты языка $L$}
+	\begin{enumerate}
+		\item $L \in NP$ 
+		\item $L - NP$-труден
+		\begin{enumerate}
+			\item $N - NP$-труден
+			\item $f(w) \in N \Leftrightarrow w \in L$
+			\item $f$ - полиномиален
+		\end{enumerate}
+	\end{enumerate}
+\end{frame}
+
+\subsection{Задача 3SAT}
+\begin{frame}{Формулировка}
+	\begin{defn}
+		Проверить, является ли данная булева формула, записаная в 3-конъюнктивной нормальной форме, выполнимой
+	\end{defn}
+\end{frame}
+
+
+\begin{frame}{Докажем NP-полноту 3SAT}
+
+	\begin{center}
+	Имеем задачу:\\
+	$(x_1 \lor \neg x_2 \lor x_3) \&$\\
+	$(\neg x_1 \lor x_2 \lor x_3) \&$\\
+	$(x_1 \lor x_2 \lor x_3)$
+	\end{center}
+	
+	\begin{enumerate}
+		\item 3SAT $\in NP$
+		\item SAT $\leadsto\atop c$ 3SAT
+	\end{enumerate}
+		\begin{displaymath}
+		\begin{matrix}\nonumber
+  		a_{1,1} x_1 \lor a_{2,1} x_2  \lor & \cdots & a_{n,1} x_n\nonumber\\
+  		\vdots & & \vdots\nonumber\\
+  		a_{1,n} x_1 \lor a_{2,n} x_2  \lor & \cdots & a_{n,n} x_n\nonumber	
+		\end{matrix}
+		=
+	\end{displaymath}
+		
+	
+\end{frame}
+\begin{frame}{}
+	\begin{center}
+		\textbf{Докажем $f(w) \in$ 3SAT $\Leftarrow w \in$ SAT}\\
+		$w \in$ SAT $\Rightarrow$ хотя бы 1 из дизъюнктов равен 1 \\
+		Имеем формулу $w$ из SAT:\\
+		$(x_1 \lor x_2 \lor \neg x_3 \neg\lor x_4 \lor x_5)$\\
+		Превратим ее в набор дизъюнктов $f(w)$ для 3SAT:\\
+		$(x_1 \lor x_2 \lor y_1) \&$\\
+		$(\neg y_1 \lor \neg x_3 \lor y_2)\&$\\
+		$(\neg y_2 \lor \neg x_4 \lor x_5)$\\
+		``Протаскиваем'' 1 так, чтобы $f(w) \Rightarrow w$\\
+		
+		\textbf{Докажем $f(w) \in$ 3SAT $\Rightarrow w \in$ SAT}\\
+		Нельзя добиться истинности конъюнкций не используя ни одного $x=1$, а значит итоговая строка равна 1	
+ 	\end{center}	
+\end{frame}
+
+\subsection{Задача IS}
+\begin{frame}{Формулировка}
+	\begin{defn}
+		По графу $G = (V,E)$ и числу $k$ узнать, существует ли независимое множество вершин $V'$, такое что $|V'|=k$
+	\end{defn}
+\end{frame}
+
+
+\begin{frame}{Докажем NP-полноту IS}
+	
+	\begin{enumerate}
+		\item IS $\in NP$
+		\item IS - $NP$-трудна
+		\item 3SAT $\leadsto\atop c$ IS
+	\end{enumerate}
+	$(x_1 \lor x_2 \lor \neg x_3) = F_1$\\
+	$(x_1 \lor \neg  x_2 \lor x_3) = F_2$\\
+	$(\neg x_1 \lor x_2 \lor x_3) = F_3$\\
+	$(\neg x_1 \lor \neg x_3 \lor \neg x_2) = F_4$\\
+	Каждую переменную в каждом дизъюнкте превращаем в вершину графа. Вершины соеденены сторонами если состоят в одном дизъюнкте (будем назыать их $E_1$), либо являются отрицанием друг друга $(x_i$~и~$\neg x_i)$) (будем называть их $E_2$)
+\end{frame}
+
+\begin{frame}{}
+\begin{tikzpicture}
+\Vertex[Math,L=x_1,x=0.9,y=1.5]{f1x1}
+\Vertex[Math,L=x_2,x=1.3,y=0.3]{f1x2}
+\Vertex[Math,L=\neg x_3,x=0.2,y=0.5]{f1nx3}
+
+\Vertex[Math,L=x_1,x=4.8,y=0.3]{f2x1}
+\Vertex[Math,L=\neg x_2,x=6,y=0.15]{f2nx2}
+\Vertex[Math,L=x_3,x=7,y=0.5]{f2x3}
+
+\Vertex[Math,L=\neg x_1,x=0.9,y=5]{f3nx1}
+\Vertex[Math,L=x_2,x=1.5,y=5.8]{f3x2}
+\Vertex[Math,L=x_3,x=0.5,y=6]{f3x3}
+
+\Vertex[Math,L=\neg x_1,x=5,y=5.7]{f4nx1}
+\Vertex[Math,L=\neg x_2,x=5.8,y=5]{f4nx2}
+\Vertex[Math,L=\neg x_3,x=6,y=6]{f4nx3}
+%Внутри дизъюнкта
+\Edge(f1x1)(f1x2)
+\Edge(f1x1)(f1nx3)
+\Edge(f1x2)(f1nx3)
+
+\Edge(f2x1)(f2nx2)
+\Edge[style=bend left](f2x1)(f2x3)
+\Edge(f2nx2)(f2x3)
+
+\Edge(f3nx1)(f3x2)
+\Edge(f3nx1)(f3x3)
+\Edge(f3x2)(f3x3)
+
+\Edge(f4nx1)(f4nx2)
+\Edge(f4nx1)(f4nx3)
+\Edge(f4nx2)(f4nx3)
+%Между
+
+\Edge(f1x1)(f3nx1)
+\Edge(f1x1)(f4nx1)
+\Edge(f2x1)(f3nx1)
+\Edge(f2x1)(f4nx1)
+
+\Edge[style=bend right](f1x2)(f2nx2)
+\Edge(f1x2)(f4nx2)
+\Edge(f3x2)(f2nx2)
+\Edge(f3x2)(f4nx2)
+
+\Edge[style={bend left=50}](f2x3)(f1nx3)
+\Edge[style=bend right](f2x3)(f4nx3)
+\Edge[style=bend right](f3x3)(f1nx3)
+\Edge[style=bend left](f3x3)(f4nx3)
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{$w \in 3SAT \Rightarrow f(w) = (V,E,k) \in IS$}
+	$\exists x_1 \ldots x_n :F_1(x_1 \ldots x_n) = F_2(x_1 \ldots x_n) = \ldots =1$\\
+	Среди каждой тройки 3SAT существует формула, равная 1\\
+	$E_1$ независисмы по определению \\
+	$E_2$ независимы по построению $(x_i~\neq~\neg~x_i)$
+\end{frame}
+
+\begin{frame}{$w \in 3SAT \Leftarrow f(w) = (V,E,k) \in IS$}
+	$\exists~IS~,V': |V'|=k$\\
+	$x_i$ не может быть выбрано с $\neg x_i$\\
+	Выбрано строго по 1 вершине в каждой тройке и нет противоречий, значит 3SAT выполнима.\\
+	 
+\end{frame}
+\subsection{Известные NP-полные задачи}
+\begin{frame}{Сводимость некоторых NP-полных задач}
+\begin{tikzpicture}[sibling distance=9em,
+  every node/.style = {shape=rectangle, rounded corners,
+    draw, align=center,
+    top color=white, bottom color=blue!20}]]
+  \node {SAT}
+    child { node {3SAT}
+      child { node {3-сочетания}
+        child { node {Разбиение\\множества}} }
+      child { node {$k$ - раскраска\\графа} }
+      child { node {Независимое\\множество}
+        child { node {Clique}}
+        child { node {Вершинное\\покрытие}
+          child { node {Гамильтонов\\цикл}}}}};
+\end{tikzpicture}
+\end{frame}
+
+\end{document}
+
+

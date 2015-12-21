@@ -1,0 +1,311 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,thmtools}
+
+% Good footer
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\newcommand{\eqnref}[1]{\eqref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\lemref}[1]{Lemma \ref{#1}}
+\newcommand{\corref}[1]{Corollary \ref{#1}}
+\newcommand{\thmref}[1]{Theorem \ref{#1}}
+% Real numbers
+\newcommand{\Real}[1]{\mathbb{R}^{#1}}
+% Complex numbers
+\newcommand{\Complex}[1]{\mathbb{C}^{#1}}
+% Integers
+\newcommand{\Integer}[1]{\mathbb{Z}^{#1}}
+% Rank operator
+\DeclareMathOperator{\rank}{\textnormal{rank}}
+% Vec operator
+\newcommand{\vecop}{\textnormal{vec}}
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+% Trace
+\newcommand{\trace}{\textnormal{tr}}
+% Range
+\newcommand{\range}{\textnormal{range}}
+% Partial derivative
+\newcommand{\pd}[2]{\dfrac{\partial #1}{\partial #2}}
+% Complete derivative
+\newcommand{\dd}[2]{\dfrac{d #1}{d #2}}
+% Complete derivative, second order
+\newcommand{\dds}[2]{\dfrac{d^2 #1}{d {#2}^2}}
+% Limit to N / N
+\newcommand{\limover}[1]{\lim_{#1 \rightarrow \infty} \dfrac{1}{#1}}
+% Display style sum
+\newcommand{\dsum}{\displaystyle\sum}
+% arg min and arg max
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg~max}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg~min}}}
+%---------------------------------------------------------------------------
+% Create theorem without number
+\declaretheoremstyle[headfont=\bfseries,notefont=\bfseries,bodyfont=\itshape,notebraces={}{},headpunct={},postheadspace=1em]{mystyle}
+\declaretheorem[style=mystyle,numbered=no,name=Теорема]{thm-hand}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{state}[thm]{Утверждение}
+\newtheorem{cor}[thm]{Следствие}
+\newtheorem{conj}[thm]{Предположение}
+\newtheorem{rmk}[thm]{Замечание}
+\newtheorem{proof-rus}[thm]{Доказательство}
+\newtheorem{obs}[thm]{Наблюдение}
+\newtheorem{dfn}[thm]{Определение}
+\theoremstyle{definition}
+\newtheorem{Q}[thm]{Вопрос}
+\newtheorem{A}[thm]{Ответ}
+\newtheorem{prob-rus}[thm]{Задача}
+\newtheorem{ex}[thm]{Пример}
+
+\usetheme{Warsaw}
+
+\title{Лекция 11}
+\author{Подготовил Савичев Игорь, КБ-301}
+
+\begin{document}
+\date{30.11.15}
+
+\frame{\titlepage
+\begin{center}
+Теория алгоритмов 2015
+\end{center}
+}
+
+
+\section{Лектор - Юрий Окуловский}
+\begin{frame}
+    \frametitle{Повторение}
+    В прошлый раз мы остановились на полиномиальной иерархии.
+    И успели ввести одно определение.
+    \begin{dfn}
+        $(\Pi)\sum^kp = \{L: \exists$ ДМТ $M$ $w \in L
+        \Leftrightarrow \exists c_1 \forall c_2 \exists c_2
+        \forall c_3 ... Qc_k$: $M(w, c_1, c_2, ..., c_k) = 1$ \}.
+    \end{dfn}
+    Кроме того, мы поняли, что можно ввести функциональный класс.
+    \begin{dfn}
+        $F\sum^kp = \{R: \exists$ ДМТ $M$ $(x,y)\in R
+        \Leftrightarrow \forall c_1 \exists c_2 ... Q_{k-1}:
+         M(x, y, c_1, ..., c_{k-1}) = 1$ \}.
+    \end{dfn}
+\end{frame}
+
+\begin{frame}
+    Поговорим немного об этих классах.
+    Очевидно следующее утверждение:
+    \begin{state}
+        Если $\exists k \sum^kp = \Pi^kp \Rightarrow \sum^{k+1}p = \sum^kp$, то есть, если эти классы равны, то полиномиальная иерархия коллапсирует
+        и дальше никаких классов нет.
+    \end{state}
+    \begin{proof-rus}
+        Без доказательства.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    Сформулируем ещё одну задачу.
+    \begin{prob-rus}
+        $QSAT-k$ - $\exists x_1^1 .. x_{k_1}^1 \forall x_1^1 ... x_{k_2}^2 \exists x_1^3 ... x_{k_3}^3 ... : F(x_1^1...) = 1$. \\
+        Где $Q$ - какой-то квантор. \\
+        $SAT$ - Задача выполнимости булевых формул.\\
+        $k$ - количество переменных.
+    \end{prob-rus}
+    \begin{rmk}
+        Из соображений, эквивалетных теореме Кука, мы можем доказать, что эта задача полна в каждом классе, которые мы привели в начале.
+        Соответсвенно, \\
+        $\exists SAT-2$ полна в $\sum^2p$ и \\
+        $\forall SAT-2$ полна в $\Pi^2p$.
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    Введём ещё одно утверждение о коллапсирующей иерархии.
+    \begin{state}
+        Если $\exists k \sum^kp = \Pi^kp \Rightarrow PH = \sum^kp$, \\
+        где $PH = \cup_k\sum^kp\cup \Pi^kp$.
+    \end{state}
+    \begin{proof-rus}
+        Без доказательства.
+    \end{proof-rus}
+    Суть этого утверждения в том, что все эти вопросы о равенстве классов
+    $P$ и $NP$, они в этой иерархии до самого верха, то есть, если $P$ = $NP$
+    вся иерархия сваливается в $P$. \\
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        На этом мы закончим с полиномиальной иерархией и двинемся дальше.
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Новая тема}
+    \begin{center}
+        \textbf{SPACE-COMPLEXITY} \\
+        Вторая сложность алгоритмов.
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    Мы до сих пор интересовались только временной сложностью алгоритмов: сколько тактов проработает данный алгоритм на каком-то входе. \\
+    Сейчас же введём вторую сложность алгоритмов - \textit{ёмкостную сложность} \\
+    Для этого нам понадобится ввести модицифированную МТ.
+    \begin{dfn}
+        МТ с двумя лентами. \\
+        1. read-only - на ней записано условие (входящие данные). \\
+        2. обычная.
+    \end{dfn}
+    И вот необходимый размер обычной ленты и есть ёмкостная сложность. \\
+    То есть, сколько ячеек будет затрачено на этой обычной ленте.
+\end{frame}
+
+\begin{frame}
+    Соответсвенно, мы можем выделить следующие классы.
+    \begin{dfn}
+        $DSPACE(f)$ - множество алгоритмов с ёмкостной сложностью $O(f(n))$.
+    \end{dfn}
+    \begin{dfn}
+        $NSPACE(f)$ - множество алгоритмов с ёмкостной сложностью $O(f(n))$ на
+        НМТ.
+    \end{dfn}
+\end{frame}
+
+\begin{frame}
+    И раз у нас появляются $DSPACE$ и $NSPACE$, мы хотим ввести классы сложности. \\
+    Какие классы нам интересны ?
+    \begin{dfn}
+        $L = DPSACE(log)$ - класс алгоритмов, которые работают за логарифмическое
+        время.
+    \end{dfn}
+    \begin{dfn}
+        $NL = NSPACE(log)$ - класс алгоритмов, которые работают за логарифмическое
+        время.
+    \end{dfn}
+    \begin{dfn}
+        $PSPACE = \cup_k DSPACE(n^k)$
+    \end{dfn}
+    \begin{dfn}
+        $NPSPACE = \cup_k NSPACE(n^k)$
+    \end{dfn}
+\end{frame}
+
+\begin{frame}
+    Теперь мы можем ввести строгое определение ёмкостной сложности.
+    \begin{dfn}
+        Ёмкостная сложность - это точная верхняя граница количества дополнительной
+        памяти необходимой для работы МТ в зависимости от размера входа.
+    \end{dfn}
+    То есть, это какая-то функция, которая на размер входа выдаёт точную верхнюю границу.
+\end{frame}
+
+\begin{frame}
+    Как между собой соотносятся $P$ и $PSPACE$ ? \\
+    Если мы вспомним, что такое $P$ и $PSPACE$, то ответ придёт довольно легко.
+    \begin{rmk}
+        $P$ - это те алгоритмы, которые работают за полиномиальное время. \\
+    \end{rmk}
+    \begin{proof-rus}
+        Сложно за полиномиальное время "изгадить" больше ячеек памяти, чем полином. \\
+        Поэтому очевидно, что $P \subseteq PSACE$.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    Также очевидно более сложное условие.
+    \begin{rmk}
+        $DTIME(f) \subseteq DPSACE(F)$.
+    \end{rmk}
+    \begin{proof-rus}
+        Нужно просто понять, что если вы работаете $k$ шагов, то больше чем $k$ ячеек
+        вам не понадобится. \\
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    Другой вопрос сложнее: что больше $PSPACE$ или $EXPTIME$ ?
+    \begin{rmk}
+         $PSPACE \subseteq EXPTIME$.
+    \end{rmk}
+    \begin{proof-rus}
+        У нас есть некоторое ограничение на работу памяти. \\
+        Пусть мы берём в нашу МТ слово $w$, а это значит, что мы можем использовать места не более чем $|w|^k$, где $k$ - некоторое число. \\
+        Теперь нужно вспомнить, что такое конфигурация МТ ?
+        Это то: \\
+        1. Что записано на ленте (обычной). \\
+        2. Состояния, которых конечное число. \\
+        3. И две позиции. \\
+        А всего таких конфигураций может быть очень много.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    Таким образом, если у нас полиномиальное ограничение на размер памяти, то у нас
+    есть экспоненциальное ограничение на время.
+    \begin{rmk}
+        $DTIME(f) \supseteq DSPACE(log(f))$.
+    \end{rmk}
+    Сейчас мы можем нарисовать грубую иерархию, чуть позднее мы её уточним.
+    \begin{conj}
+        $L \subseteq P \subseteq PSPACE \subseteq EXPTIME$.
+    \end{conj}
+    Где-то здесь потерялись $NL$, $NPSPACE$ и $PH$. \\
+    Сейчас мы постараемся на все эти вопросы ответить.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Теорема Савича (Savich)}
+    \begin{thm}
+        $PSPACE = NPSPACE$
+    \end{thm}
+    \small
+    \begin{proof-rus}
+        Пусть $\exists$ алгоритм поиска пути в графе $G$ из $s$ в $t$, занимающий
+        $log^2(G)$ (кол-ва вершин) памяти. \\
+        Мы имеем алгоритм $A(s, t, k)$ - $\exists$ путь из $s$ в $t$ из $k$ вершин. \\
+        1. if ($k$ = 0) \{ if ($s$ = $t$) ret 1; else ret 0;\} \\
+        2. if ($k$ = 1) \{ if ($s$ = $t$) $\in E$ ret 1 else ret 0;\} \\
+        3. forEach($v \in V \ s,t$)
+              if $(A(s, v, [\frac{k}{2}]$\&\&$A(v, t, [\frac{k}{2}])$ ret 1;
+              else ret 0; \\
+        То есть, когда мы ищем путь из $s$ в $t$, мы пытаемся проверить, что для какой-то
+        вершины в графе есть обе половины пути. \\
+        А когда мы найдём эту вершину, то это и будет означать, что существует такой путь.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Итог}
+    Что из этого практически следует ? \\
+    \begin{obs}
+        Допустим, что у нас есть какая-то НМТ, память которой ограничена неким числом $k$. \\
+        Число её конфигураций - $2^k$. \\
+        Весь граф переходов этой НМТ имеет экспоненциальный размер, а как мы помним: Задача о том,
+        остановится ли данная НМТ - это в точности задача поиска пути в пространстве её конфигураций.\\
+        А эту задачу мы умеем решать за $k^2$.
+    \end{obs}
+\end{frame}
+
+\begin{frame}
+    Введём ещё одну полную задачу:
+    \begin{prob-rus}
+        По $w$ проверить $\exists c_1 \forall c_2 ... Qc_k M(w, c_1, c_2,..., c_k) = 1$ и
+        $k < P(w)$.
+    \end{prob-rus}
+    Это выиграшная стратегия в играх, которые не могут расти
+    бесконечно. (например, шашки).
+\end{frame}
+
+\end{document}

@@ -1,0 +1,234 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,thmtools}
+
+% Good footer
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\newcommand{\eqnref}[1]{\eqref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\lemref}[1]{Lemma \ref{#1}}
+\newcommand{\corref}[1]{Corollary \ref{#1}}
+\newcommand{\thmref}[1]{Theorem \ref{#1}}
+% Real numbers
+\newcommand{\Real}[1]{\mathbb{R}^{#1}}
+% Complex numbers
+\newcommand{\Complex}[1]{\mathbb{C}^{#1}}
+% Integers
+\newcommand{\Integer}[1]{\mathbb{Z}^{#1}}
+% Rank operator
+\DeclareMathOperator{\rank}{\textnormal{rank}}
+% Vec operator
+\newcommand{\vecop}{\textnormal{vec}}
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+% Trace
+\newcommand{\trace}{\textnormal{tr}}
+% Range
+\newcommand{\range}{\textnormal{range}}
+% Partial derivative
+\newcommand{\pd}[2]{\dfrac{\partial #1}{\partial #2}}
+% Complete derivative
+\newcommand{\dd}[2]{\dfrac{d #1}{d #2}}
+% Complete derivative, second order
+\newcommand{\dds}[2]{\dfrac{d^2 #1}{d {#2}^2}}
+% Limit to N / N
+\newcommand{\limover}[1]{\lim_{#1 \rightarrow \infty} \dfrac{1}{#1}}
+% Display style sum
+\newcommand{\dsum}{\displaystyle\sum}
+% arg min and arg max
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg~max}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg~min}}}
+%---------------------------------------------------------------------------
+% Create theorem without number
+\declaretheoremstyle[headfont=\bfseries,notefont=\bfseries,bodyfont=\itshape,notebraces={}{},headpunct={},postheadspace=1em]{mystyle}
+\declaretheorem[style=mystyle,numbered=no,name=Теорема]{thm-hand}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{state}[thm]{Утверждение}
+\newtheorem{cor}[thm]{Следствие}
+\newtheorem{conj}[thm]{Предположение}
+\newtheorem{rmk}[thm]{Замечание}
+\newtheorem{proof-rus}[thm]{Доказательство}
+\newtheorem{proof-rus-cont}[thm]{Продолжение доказательства}
+\newtheorem{obs}[thm]{Наблюдение}
+\newtheorem{sled}[thm]{Следствие}
+\newtheorem{dfn}[thm]{Определение}
+\newtheorem{alg}[thm]{Алгоритм}
+\theoremstyle{definition}
+\newtheorem{Q}[thm]{Вопрос}
+\newtheorem{A}[thm]{Ответ}
+\newtheorem{prob-rus}[thm]{Задача}
+\newtheorem{ex}[thm]{Пример}
+\newtheorem{lsz}[thm]{Лемма Шварца-Зиппеля}
+
+\usetheme{Warsaw}
+
+\title{Лекция 13. Квантовые алгоритмы}
+\date{14 Декабря, 2015}
+
+\begin{document}
+
+\frame{\titlepage
+\begin{center}
+Теория алгоритмов 2015
+\end{center}
+}
+
+
+\section{Лектор - Юрий Окуловский}
+\begin{frame}
+    \begin{dfn}
+        $\psi(x, y, z, r)$ - вероятность нахождения данной частицы в данном месте в данное время.
+    \end{dfn}
+    С помощью квантовых свойств можно построить машину, которая будет хранить кубиты. Кубиты могут находиться в трех состояниях: $1$, $0$ и неопределенность(пока не измерили).
+    \begin{dfn}
+        $\alpha | 0> + \beta|1>$ - запись состояния кубита. $\alpha$,$\beta$ - коэффициенты, причем $\alpha^2$, $\beta^2$ - вероятность измерения соответсвующего состояния.
+    \end{dfn}
+    \begin{sled}
+        $\alpha^2 +\beta^2 = 1$
+    \end{sled}
+\end{frame}
+
+\begin{frame}
+    Далее запись вида $\textbf{\textit{2 | 0> + |1>}}$ подразумевает собой то, что на самом деле сущесвтует нормализирующий коэффициент, который принято опускать. В данном случае полная запись выглядит так: \\
+    $\frac{1}{\sqrt[2]{5}}$ $(2 | 0> + | 1 >)$ \\
+    \vspace{\baselineskip}
+    Пример для записи состояния из двух кубитов:\\
+    $(\alpha_1 | 0> + \beta_1 | 1>)*(\alpha_2 | 0> + \beta_2 | 1>)$
+\end{frame}
+
+\begin{frame}
+    Однако вся соль квантовых алгоритмов заключается в том, что состояние квантовых систем из двух кубитов записывается таким образом:
+    $$ \alpha_1 | 00> + \alpha_2 | 01> + \alpha_3 | 10> + \alpha_4 | 11> $$
+    \begin{rmk}
+        $$ \alpha_1^2 + \alpha_2^2 + \alpha_3^2 + \alpha_4^2 = 1 $$
+    \end{rmk}
+    \begin{rmk}
+        Если система состоит из n кубитов, то имеем $2^n - 1$ степеней свободы. То есть мы получаем экспоненциальное пространство состояний достаточно маленькими усилиями.
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    Возникает резонный вопрос - как пользоваться этими регистрами для вычислений? \\
+    Нам нужно каким-то образом менять значения регистров. На самом деле существуют некоторые физические процессы, которые меняют коэффициенты регистров. \\
+    Все эти процессы математические сводятся к следующему:
+    $$ (\alpha_1, \alpha_2, ... , \alpha_n) * M = (\beta_1, \beta_2, ... , \beta_n) $$
+    Где $M$ - некая матрица, а $ (\beta_1, \beta_2, ... , \beta_n) $ - новое состояние.
+    \begin{rmk}
+        1. $|M| = 1$ \\
+        2. М - Эрмитова матрица
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    \begin{ex}
+        $$ f(x, y) = x \wedge y $$
+        На самом деле функция $f(x, y)$ выглядит так: $$ f(x, y, z) = (x, y, x \wedge y ) $$
+        Матрица должна быть размера $ 8*8 $: \\
+        $$ M = 
+             \begin{pmatrix}
+              1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+              0 & 0 & 0 & 0 & 0 & 0 & 1 & 1
+             \end{pmatrix}  $$
+    \end{ex}
+\end{frame}
+
+\begin{frame}
+    \begin{dfn}
+        Матрица $M$ называется гейт.
+    \end{dfn}
+    \begin{dfn}
+        Гейт Адамара:
+         $$ \frac{1}{\sqrt[2]{2}} * 
+             \begin{pmatrix}
+              1 & 1 \\
+              1 & -1
+             \end{pmatrix}  $$
+        $$ |0> \rightarrow |0> + |1> \rightarrow |0>$$
+        $$ |1> \rightarrow |0> - |1> \rightarrow |1>$$
+    \end{dfn}
+    Попробуем определить, как действует гейт Адамара на такое произведение кубитов: $$ |x> = |X_1> * |X_2> * ... * |X_n>$$
+\end{frame}
+
+\begin{frame}
+    После применения гейта Адамара на $X_1$ получим: $$ |X_1> \rightarrow |0> + (-1)^{X_1} | 1> $$
+    Если всюду подставить эту формулу, то получим: $$ \sum_{y \in \{0, 1\}^n} -1^{x \star y} | y> $$
+    Где $x \star y$ - скалярное произведение по модулю 2. \\
+    Для более ясного понимания, разберем эту задачу при $ n = 3 $
+\end{frame}
+
+\begin{frame}
+    $$ (|0> + (-1)^{X_1}|1>) * (|0> + (-1)^{X_2}|1>) * (|0> + (-1)^{X_3}|1>) $$
+    Раскарыв скобки, мы получим элементы вида:
+    $$ \begin{matrix}
+      $|000>$ & $|100>$ \\
+      $|001>$ & $|101>$ \\
+      $|010>$ & $|110>$ \\
+      $|011>$ & $|111>$
+    \end{matrix} $$
+    Перед каждым из них стоит множитель. Например $|011>$ умножается на $(-1)^0 * (-1)^{X_2} * (-1)^{X_3} $ и т.д. \\
+    Этот множитель как раз и получается скалярным произведением булевых векторов.
+\end{frame}
+
+\begin{frame}
+    \begin{prob-rus}
+        \textbf{Задача Саймона}\\
+        $f(x_1, x_2, ... , x_n) = (y_1, y_2, ... , y_n) $ - булева функция \\
+        $f: \{0,1\}^n \rightarrow \{0,1\}^n$ \\
+        $\exists a : f(x \bigoplus a) = f(x) \forall x$ - условие существования периода. \\
+        Задача Саймона - найти период функции.
+    \end{prob-rus}
+    \begin{rmk}
+        Эта задача имеет экспоненциальную сложность. Квантовые алгоритмы умеют делать это за линейное время.
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    \textbf{Алгоритм Саймона}\\
+    $\underbrace{|00..0>}_\text{n} \underbrace{|00..0>}_\text{m}$ \\
+    1. $|00..0> |00..0>$ \\
+    2. Применим гейт Адамара к первой части\\
+        $\sum_{x \in \{0, 1\}^n} |x>|0>$ \\
+    3. Теперь уже к обоим регистрам применяем функцию $f$. Другими словами применяем преобразование \\
+        $ x, 0 \rightarrow x, f(x) $. Тогда получим\\
+        $\sum_{x \in \{0, 1\}^n} |x>|f(x)> = \sum_{x \in \{0, 1\}^n}(|x> + |x + a>)|f(x)> $ \\
+        Измерим последние $m$ кубитов.
+    4. Измерение одного кубита влечет изменения состояния второго кубита. Это явление называется квантовой запутанностью.
+        
+\end{frame}
+
+\begin{frame}
+    После измерения мы будем знать что в первых n кубитах будет лежать:\\
+    $\underbrace{(|x> + |x+a>)}_\text{n}\underbrace{f(x)}_\text{m}$ \\
+    Применим гейт Адамара еще раз: \\
+    \vspace{\baselineskip}
+    $\sum_{y}(-1)^{x*y}|y> + \sum_{y}(-1)^{(x+a)*y}|y> =
+        \sum_{y}[(-1)^{x*y} + (-1)^{x*y}*(-1)^{a*y}]|y>$ \\
+    Пусть $a*y = 1$. Тогда получим: \\
+    $(-1)^{x*y} + (-1)*(-1)^{x*y} = 0 \implies a*y = 1$ - событие нулевой вероятности. Тогда получим, что нам выпадают только такие $y$, что $ a*y = 0 $ \\
+    Далее запускаем весь этот процесс несколько раз, чтобы получить $k$ независимых $y$.  Строим систему линейных уравнений над полем $Z_2$, решаем её методом Гаусса и получаем период $a$.\\
+    \textbf{Конец алгоритма}
+\end{frame}
+
+\end{document}\end{document}
+Status API Training Shop Blog About Pricing
+© 2015 GitHub, Inc. Terms Privacy Security Contact Help

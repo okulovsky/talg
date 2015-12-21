@@ -1,0 +1,211 @@
+\documentclass{scrartcl}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{multirow}
+\begin{document}
+\title{Теория алгоритмов}
+\subtitle{Лекция №3}
+\author{Конспект Вячеслава Копейцева, КН-301\\Читает Юрий Окуловский}
+\date{28.09.2015}
+\maketitle
+На прошлой лекции было закончено обсуждение машины Тьюринга (далее МТ) и дано определение машины Минского (далее ММ)
+\section{Вычислительная мощность ММ}
+
+Докажем, что ММ по вычислительным возможностям равномощна МТ т.е.:
+\begin{enumerate}
+\item $ MM \subseteq MT $
+\item$ MT \subset MM $
+\end{enumerate}
+Доказательство:
+\begin{enumerate}
+\itemВозьмём МТ с $ \Sigma \{1, 0\} $
+\itemДоговоримся, что $ \delta$ полностью определена
+\end{enumerate}
+
+$ q_i, 0 \to q_{ni}, s_{ni}, p_i^2$
+
+$ q_i, 1 \to q_{yi}, s_{yi}, p_i^3$
+
+Лента МТ:
+
+\hspace*{18mm}$\nabla$
+
+$\underbrace{1000} \underbrace{1} \underbrace{10}$
+
+\ R1 \ \ R2 \ R3 $\leftarrow$ Регистры
+
+\hspace*{18mm}$\uparrow$
+
+Число, записанное в обратном порядке
+
+ММ:
+
+$p_i : R_2++ ; p_i'$
+
+$p_i' : R_2--, p_i^2 : p_i^3$ - в зависимости от сравнения с 0
+
+Рассмотрим состояния $ p_i^2$:
+
+Нужно напечатать что-то на ленте
+
+$ p_i^2$: если $S_{ni}$ = 0, то ничего;
+
+\hspace*{15mm}$S_{ni}$ = 1, то $R_2$++;
+
+В самой ММ условного перехода нет, т.к. всё уже определено
+
+если $t_{ni} = \bullet$, то ничего;
+
+если $t_{ni} = \leftarrow$, то: $R_3 = 2R_3 + R_2$
+
+\hspace*{30mm}$R_2 = R_1 \% 2$
+
+\hspace*{30mm}$R_1 = R_1 / 2$
+
+\section{Тезис Чёрча-Тьюринга}
+\begin{enumerate}
+\item Любое мыслимое на сегоднящний день определение алгоритма будет эквивалентно МТ.
+\item Всё, что мы можем вычислить, мы можем вычислить на МТ.
+\end{enumerate}
+
+\section{Теория вычислимости}
+\subsection{Определения}
+
+Опр. L - язык вычислимый (decidable) или разрешимый, если $\exists$МТ A, которая его распознаёт т.е.:
+
+A : $\forall$ w $\in$ L A(w) = 1
+
+\hspace*{6,5mm}$\forall$ w $\not\in$ L A(w) = 0
+
+R - счётное число\\
+Опр. Язык L - рекурсивно-перечислимый (semidecidable), если $\exists$МТ A такая что:
+
+$\forall$ w $\in$ L A(w) = 1
+
+$\forall$ w $\not\in$ L A(w) = МТ ничего не говорит.
+
+Re - счётное число
+
+R $\subset$ Re
+
+Всего МТ - счётное число, т.к. текст имеет конечную длину т.е. |R| и |Re| - счётно.
+
+L $\subseteq \Sigma^*$ 
+
+$|\Sigma^*|$ = континуум $\Rightarrow \exists$ L $\not\in$ Re т.е. не распознаваемый МТ.
+
+Опр. Язык L - кo-рекурсивно-перечислимый (CoRe), если $\exists$МТ A такая что:
+
+$\forall$ w $\not\in$ L A(w) = 1
+
+$\forall$ w $\in$ L A(w) = машина зацикливается.
+
+\begin{figure}[h]
+\centering
+\def\seta{(0,0) circle (2.5)}
+\def\setb{(-0.6,-0.8) circle (1.1)}
+\def\setc{(0.6,-0.8) circle (1.1)}
+\begin{tikzpicture}
+     \tikzstyle{element}=[minimum size=1mm, font=\large]
+    \node[element] ($all$) at (0,1) {Все языки};
+    \node[element] ($Re$) at (-1,-1) {Re};
+    \node[element] ($R$) at (0,-0.9) {R};
+    \node[element] ($Core$) at (1,-1) {Core};
+    \draw \seta;
+    \draw \setb;
+    \draw \setc;
+\end{tikzpicture}
+\end{figure}
+Утв. R = Re $\cap$ Core.\\
+Доказательство:\\
+$\subseteq$:
+
+L $\in$ R $\Rightarrow \exists$ MT A, которую можно разделить на две MT:
+\begin{enumerate}
+\item $A_1$ : $\forall$ w $\in$ L A(w) = 1
+
+\hspace*{8mm}$\forall$ w $\not\in$ L A(w) = машина зацикливается.
+
+L $\in$ Re
+\item $A_0$ : $\forall$ w $\in$ L A(w) = машина зацикливается.
+
+\hspace*{8mm}$\forall$ w $\not\in$ L A(w) = 1
+
+L $\in$ CoRe
+\end{enumerate}
+$\supseteq$:
+
+L $\in$ Re $\cap$ CoRe $\Rightarrow L \in Re, L \in CoRe$
+
+Запустим параллельно:
+
+\begin{tabular}{cc}
+$A_1$ & \multirow{2}*{\huge\}\large A}\\
+$A_0$ & \\
+\end{tabular}\\
+Утв. R замкнут относительно $\cup, \cap, \neg$ т.е.:
+
+$\forall L_1, L_2 \in R : L_1 \cap L_2 \in R, L_1 \cup L_2 \in R, \Sigma^* \setminus L_1 \in R$\\
+Доказательство:
+
+Запустить обе MT и ждать результата их работы т.к. они обязательно должны остановиться.\\
+Утв. Re замкнут относительно $\cup, \cap$ т.е.:
+
+$\forall L_1, L_2 \in Re : L_1 \cap L_2 \in Re, L_1 \cup L_2 \in Re$\\
+Доказательство:
+Параллельно запускаем две МТ. В случае пересечения мы гарантировано за конечное время дождёмся остановки двух МТ, в случае объединения - одной.
+
+\subsection{Теорема ''Проблема останова'' (Halting problem)}
+Определить, останавливается ли MT A на входных данных X?
+
+$L_H = \{''(A, X)''$ : A останавливается на X\}
+
+$L_H \in Re$
+
+$w \in L_H$
+
+$w = (A, X)$
+
+Покажем, что $L_H \not\in R.$
+
+От противного:
+
+\begin{tabular}{ll}
+\multirow{2}*{$\exists MT M(A, X) = \{$} & 1, если A останавливается на X\\
+& 0, если A не останавливается на X\\ 
+\end{tabular}
+
+Машина $M_1 : M_1(A) = M(A, A)$
+
+\begin{tabular}{ll}
+\multirow{2}*{$M_2(A) = \{$} & зацикливается, если $M_1(A)$ = 1\\
+& 1, если $M_1(A)$ = 0\\ 
+\end{tabular}
+
+Рассмотрим чему равно $M_2(M_2)$:
+
+Пусть $M_2(M_2)$ останавливается $\Rightarrow M(M_2, M_2) = 1 \Rightarrow M_1(M_2) = 1 \Rightarrow M_2(M_2)$ зациклится.
+
+Если $M_2(M_2)$ зациклится $\Rightarrow M(M_2, M_2) = 0 \Rightarrow M_1(M_2) = 0 \Rightarrow M_2(M_2) = 1$ т.е. машина не зациклится.
+
+Противоречие $\Rightarrow \not\exists M$.\\
+Пример:
+
+Рассмотрим код:
+for x = 2,3...
+
+\hspace*{36.5mm}y = 2,3...
+
+\hspace*{36,5mm}n = 3,4...
+
+\hspace*{36,5mm}z = 2,3...
+
+\hspace*{36.5mm}if ($x^n+y^n==z^n$)
+
+\hspace*{42.5mm}stop
+
+
+С помощью такой МТ можно было бы доказать великую еорему Ферма, как и любую другую теорему из области конструктивной математики, но, к сожалению, очевидно, что такую МТ построить нельзя.
+\end{document}

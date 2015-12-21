@@ -1,0 +1,226 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,thmtools}
+
+% Good footer
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\newcommand{\eqnref}[1]{\eqref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\lemref}[1]{Lemma \ref{#1}}
+\newcommand{\corref}[1]{Corollary \ref{#1}}
+\newcommand{\thmref}[1]{Theorem \ref{#1}}
+% Real numbers
+\newcommand{\Real}[1]{\mathbb{R}^{#1}}
+% Complex numbers
+\newcommand{\Complex}[1]{\mathbb{C}^{#1}}
+% Integers
+\newcommand{\Integer}[1]{\mathbb{Z}^{#1}}
+% Rank operator
+\DeclareMathOperator{\rank}{\textnormal{rank}}
+% Vec operator
+\newcommand{\vecop}{\textnormal{vec}}
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+% Trace
+\newcommand{\trace}{\textnormal{tr}}
+% Range
+\newcommand{\range}{\textnormal{range}}
+% Partial derivative
+\newcommand{\pd}[2]{\dfrac{\partial #1}{\partial #2}}
+% Complete derivative
+\newcommand{\dd}[2]{\dfrac{d #1}{d #2}}
+% Complete derivative, second order
+\newcommand{\dds}[2]{\dfrac{d^2 #1}{d {#2}^2}}
+% Limit to N / N
+\newcommand{\limover}[1]{\lim_{#1 \rightarrow \infty} \dfrac{1}{#1}}
+% Display style sum
+\newcommand{\dsum}{\displaystyle\sum}
+% arg min and arg max
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg~max}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg~min}}}
+%---------------------------------------------------------------------------
+% Create theorem without number
+\declaretheoremstyle[headfont=\bfseries,notefont=\bfseries,bodyfont=\itshape,notebraces={}{},headpunct={},postheadspace=1em]{mystyle}
+\declaretheorem[style=mystyle,numbered=no,name=Теорема]{thm-hand}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{state}[thm]{Утверждение}
+\newtheorem{cor}[thm]{Следствие}
+\newtheorem{conj}[thm]{Предположение}
+\newtheorem{rmk}[thm]{Замечание}
+\newtheorem{proof-rus}[thm]{Доказательство}
+\newtheorem{obs}[thm]{Наблюдение}
+\newtheorem{dfn}[thm]{Определение}
+\theoremstyle{definition}
+\newtheorem{Q}[thm]{Вопрос}
+\newtheorem{A}[thm]{Ответ}
+\newtheorem{prob-rus}[thm]{Задача}
+\newtheorem{ex}[thm]{Пример}
+
+\usetheme{Warsaw}
+
+\title{Лекция 10}
+\author{Подготовил Коврижных Алексей, КН-301}
+
+\begin{document}
+\date{23.11.15}
+
+\frame{\titlepage
+\begin{center}
+Теория алгоритмов 2015
+\end{center}
+}
+
+
+\section{Лектор - Юрий Окуловский}
+
+\begin{frame}
+    \frametitle{Язык задачи}
+    \begin{dfn}
+        $R = \{(x, y)\}$ - задача поиска. \\
+        $L(R) = \{x | \exists y:(x,y) \in R\}$ - язык для задачи $R$ (условия, для которых есть решения)
+    \end{dfn}
+    Исследуем взаимосвязь задачи поиска с их языками.
+    \begin{state}
+        $R_1 \xrightarrow[l]{} R_2 \Rightarrow L(R_1) \xrightarrow[c]{} L(R_2)$
+    \end{state}
+    \begin{proof-rus}
+        $R_1 \xrightarrow[l]{} R_2 \Rightarrow \exists f,g:(x, g(y)) \in R_1 \Leftrightarrow (f(x), y) \in R_2$ \\
+        Нужно доказать, что $f(x) \in L(R_2) \Leftrightarrow x \in L(R_1)$ \\
+        Пусть $f(x) \in L(R_2) \Leftrightarrow \exists y:(f(x),y) \in R_2 \Leftrightarrow (x, g(y)) \in R_1 \Leftrightarrow x \in L(R_1)$
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    \begin{cor}
+        $R \in FNP\text{-}C \Rightarrow L(R) \in NP\text{-}C$
+    \end{cor}
+    \begin{state}
+        $\forall FNP\text{-}C R \xrightarrow[p]{} L(R)$
+    \end{state}
+    \begin{proof-rus}
+        $R \xrightarrow[l]{} F\text{-}SAT \xrightarrow[p]{} SAT \xrightarrow[k]{} L(R)$
+    \end{proof-rus}
+    Сведение по Левину корректно, т.к. $F\text{-}SAT$ $FNP$-полна, сведение по Куку было доказано на прошлой лекции, сведение по Карпу корректно, т.к. L(R) - $NP$-полна.
+    Теперь докажем, что все три сведения эквивалентны сведению по Куку.
+\end{frame}
+
+\begin{frame}
+    \begin{proof-rus}
+        Построим ДМТ (из определения сводимости по Куку) решающую задачу $R$. \\
+        Алгоритм: \\
+        1) По $x$ построить $F \in F\text{-}SAT$ \\
+        2) Запустить алгоритм сведения по Куку $F\text{-}SAT \xrightarrow[p]{} SAT$ (см. предыдущую лекцию). Каждый раз, когда алгоритм вызывает оракул от формулы $Z$, заменяем $Z$ на $Z' \in L(R)$ с помощью преобразования (3) (по Карпу) и вызываем оракул $L(R).$
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Классы дополнений языков}
+    \begin{dfn}
+        $L \in CoNP \Leftrightarrow \overline{L} \in NP$
+    \end{dfn}
+    \begin{dfn}
+        $L \in CoNP \Leftrightarrow \exists M_L \forall w \notin L \exists c : M_L(w,c) = 1$
+    \end{dfn}
+    Очевидно, что $\forall L : L \xrightarrow[p]{} \overline{L}$.
+    \begin{state}
+        $L \in NP\text{-}C \Rightarrow \overline{L} \in CoNP\text{-}C$
+    \end{state}
+    Для доказательства рассмотрим другое утверждение.
+\end{frame}
+
+\begin{frame}
+    \begin{state}
+        $L_1 \xrightarrow[k]{} L_2 \Rightarrow \overline{L_1} \xrightarrow[k]{} L_2$
+    \end{state}
+    \begin{proof-rus}
+        $L_1 \xrightarrow[k]{} L_2 \Rightarrow \exists f : w \in L_1 \Leftrightarrow f(w) \in L_2 \Rightarrow w \notin L_1 \Leftrightarrow f(w) \notin L_2 \Rightarrow w \in \overline{L_1} \Leftrightarrow f(w) \in \overline{L_2}$
+    \end{proof-rus}
+    Докажем еще один простой факт:
+    \begin{state}
+        $P \subseteq NP \cap CoNP$
+    \end{state}
+\end{frame}
+
+\begin{frame}
+    \begin{proof-rus}
+        $L \in P \Leftrightarrow \exists M\text{-ДМТ }\forall w$
+            $M(w) = 0 \Leftrightarrow w \notin L$ \\
+            \hspace{111px}$M(w) = 1 \Leftrightarrow w \in L$ \\
+        Данное определение симметрично относительно отрицания, то есть $L \in P \Leftrightarrow \overline{L} \in P$, следовательно $P=CoP$. \\
+        Тогда $\forall L : L \in P \Rightarrow \overline{L} \in P \Rightarrow \overline{L} \in NP \Rightarrow L \in CoNP$ \\
+        Итак,
+        \begin{enumerate}
+            \item $P \subseteq NP$
+            \item $P \subseteq CoNP$
+        \end{enumerate}
+        Отсюда следует, что $P \subseteq NP \cap CoNP$.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+
+    % generated by GeoGebra with some fixes
+    \begin{tikzpicture}[line cap=round,line join=round,x=0.7cm,y=0.7cm]
+        \clip(-7.682766417784926,-2.021802239740338) rectangle (7.9123863666997485,6.908919490290925);
+        \draw [rotate around={69.28738309242964:(0.7286617530349744,2.344494570353198)}] (0.7286617530349744,2.344494570353198) ellipse (3.0620206963167247cm and 1.6062195151831884cm);
+        \draw [rotate around={-72.2087968912534:(-1.3068250598145614,2.3839283527795505)}] (-1.3068250598145614,2.3839283527795505) ellipse (3.0399890120776747cm and 1.5751833473383798cm);
+        \draw(-0.35665573571062176,0.21965378120946383) circle (0.8800630605374081cm);
+        \draw (-0.7381890337599272,0.59084161037458457) node[anchor=north west] {P};
+        \draw [shift={(-2.720206214629994,6.687917209976597)}] plot[domain=4.239988859660625:5.8329927782917945,variable=\t]({1.*2.345629686975083*cos(\t r)+0.*2.345629686975083*sin(\t r)},{0.*2.345629686975083*cos(\t r)+1.*2.345629686975083*sin(\t r)});
+        \draw [shift={(2.536056873768187,6.55019852643778)}] plot[domain=3.481634878871243:5.056428836473497,variable=\t]({1.*2.462561605935805*cos(\t r)+0.*2.462561605935805*sin(\t r)},{0.*2.462561605935805*cos(\t r)+1.*2.462561605935805*sin(\t r)});
+        \draw (-3.00,6.00) node[anchor=north west] {NP};
+        \draw (1.0287494590634596,6.00) node[anchor=north west] {CoNP};
+        \draw (-1.4974680517285764,3.1779995975553343) node[anchor=north west] {FACTOR};
+        \draw (-4.00,4.50) node[anchor=north west] {\parbox{1.8066458336802418 cm}{Изоморфизм \\ графов}};
+        \begin{scriptsize}
+        \draw [fill=black] (-0.3904651514316736,2.338302121542279) circle (2.5pt);
+        \draw [fill=black] (-3.07336165389783,2.8756903218897096) circle (2.5pt);
+        \end{scriptsize}
+    \end{tikzpicture}
+
+    \begin{dfn}
+        $FACTOR$ - задача факторизации. По заданным $n$, $m$ определить, есть ли у числа $n$ простой делитель, больший чем $m$.
+    \end{dfn}
+
+\end{frame}
+
+\begin{frame}
+    \begin{thm}
+    $FACTOR \in NP \cap CoNP$
+    \end{thm}
+    \begin{proof-rus}
+        Возьмем сертификат $C=p_1^{k_1} \cdot p_2^{k_2} \cdot \dotso \cdot p_l^{k_l}$ = n (разложение числа на простые делители). По нему можно быстро (полиномиально) убедиться как в том, что у числа есть простые делители больше $m$, так и в обратном.
+    \end{proof-rus}
+    \begin{rmk}
+        Существует полиномиальный алгоритм проверки на простоту - тест Агравала-Каяла-Саксены.
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Полиномиальная иерархия классов}
+    \begin{itemize}
+        \item $P$ - $M$-ДМТ, работающая за полином. $M(w)\in\{0, 1\}$
+        \item $NP$ - $\exists ? x : M(w,x)=1$
+        \item $CoNP$ - правда ли, что $\forall x M(w,x)=1$
+        \item $FNP$ - найди $x : M(w, x)=1$
+        \item $\Sigma^2P$ - $\exists ? x \forall y M(w,x,y)=1$
+        \item $\prod^2P$ - правда ли, что $\forall x \forall y M(w,x,y)=1$
+        \item $F\Sigma^2P$ - найди $x : \forall y M(w,x,y)=1$ (пример: Задача коммивояжёра)
+    \end{itemize}
+\end{frame}
+
+\end{document}

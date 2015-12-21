@@ -1,0 +1,248 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit}
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,thmtools}
+
+% Good footer
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\newcommand{\eqnref}[1]{\eqref{#1}}
+\newcommand{\secref}[1]{Section \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\lemref}[1]{Lemma \ref{#1}}
+\newcommand{\corref}[1]{Corollary \ref{#1}}
+\newcommand{\thmref}[1]{Theorem \ref{#1}}
+% Real numbers
+\newcommand{\Real}[1]{\mathbb{R}^{#1}}
+% Complex numbers
+\newcommand{\Complex}[1]{\mathbb{C}^{#1}}
+% Integers
+\newcommand{\Integer}[1]{\mathbb{Z}^{#1}}
+% Rank operator
+\DeclareMathOperator{\rank}{\textnormal{rank}}
+% Vec operator
+\newcommand{\vecop}{\textnormal{vec}}
+% Norm
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+% Trace
+\newcommand{\trace}{\textnormal{tr}}
+% Range
+\newcommand{\range}{\textnormal{range}}
+% Partial derivative
+\newcommand{\pd}[2]{\dfrac{\partial #1}{\partial #2}}
+% Complete derivative
+\newcommand{\dd}[2]{\dfrac{d #1}{d #2}}
+% Complete derivative, second order
+\newcommand{\dds}[2]{\dfrac{d^2 #1}{d {#2}^2}}
+% Limit to N / N
+\newcommand{\limover}[1]{\lim_{#1 \rightarrow \infty} \dfrac{1}{#1}}
+% Display style sum
+\newcommand{\dsum}{\displaystyle\sum}
+% arg min and arg max
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg~max}}}
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{arg~min}}}
+%---------------------------------------------------------------------------
+% Create theorem without number
+\declaretheoremstyle[headfont=\bfseries,notefont=\bfseries,bodyfont=\itshape,notebraces={}{},headpunct={},postheadspace=1em]{mystyle}
+\declaretheorem[style=mystyle,numbered=no,name=Теорема]{thm-hand}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}[thm]{Лемма}
+\newtheorem{state}[thm]{Утверждение}
+\newtheorem{cor}[thm]{Следствие}
+\newtheorem{conj}[thm]{Предположение}
+\newtheorem{rmk}[thm]{Замечание}
+\newtheorem{proof-rus}[thm]{Доказательство}
+\newtheorem{proof-rus-cont}[thm]{Продолжение доказательства}
+\newtheorem{obs}[thm]{Наблюдение}
+\newtheorem{dfn}[thm]{Определение}
+\newtheorem{alg}[thm]{Алгоритм}
+\theoremstyle{definition}
+\newtheorem{Q}[thm]{Вопрос}
+\newtheorem{A}[thm]{Ответ}
+\newtheorem{prob-rus}[thm]{Задача}
+\newtheorem{ex}[thm]{Пример}
+\newtheorem{lsz}[thm]{Лемма Шварца-Зиппеля}
+
+\usetheme{Warsaw}
+
+\title{Лекция 12. Вероятностные компьютеры}
+
+\begin{document}
+
+\frame{\titlepage
+\begin{center}
+Теория алгоритмов 2015
+\end{center}
+}
+
+
+\section{Лектор - Юрий Окуловский}
+\begin{frame}
+    \begin{dfn}
+        Вероятностная машина Тьюринга (ВМТ) - недетерминированная машина Тьюринга, в которой переходы по веткам определяются вероятностым образом.
+    \end{dfn}
+    Сразу хочется ввести классы сложности, связанные с такими задачами. Например, обозначить задачи, которые можно посчитать на ВМТ за полином. Назовем этот класс $PP$ и определим следующим образом:
+    \begin{dfn}
+        $ L \subset PP : \exists M, w \in L \Leftrightarrow P(M(w)=1)>0.5$ и машина $M$ - полиномиальная.
+    \end{dfn}
+    То есть, мы берем слово, загружаем его в ВМТ, эта машина говорит нам "да" или "нет". Для тех слов которые лежат в этом языке ВМТ должна говорить "да" с вероятностью больше чем 0.5.
+\end{frame}
+
+\begin{frame}
+    На самом деле это плохое определение, так как при таком определении $ NP\subset PP $. Чтобы это доказать, возьмем $NP$-полную задачу $SAT$ $F(x_1, ... , x_n) $ и воспользуемся следующим вероятностным алгоритмом $M_{sat}$:
+    \begin{alg}
+        Шаг1: $x_i=\left\{\begin{array}{l}1,\ p=1/2\\0,\ p=1/2\end{array}\right.$
+        Шаг 2: Считаем F($x_i$) \\
+        Шаг 3: if (F($x_i$) = 0) \\
+            return $\left\{\begin{array}{l}1,\ p=1/2\\0,\ p=1/2\end{array}\right.$
+        else return 1;
+    \end{alg}
+\end{frame}
+
+\begin{frame}
+    \begin{thm}
+    $ NP \subset PP $
+    \end{thm}
+    \begin{proof-rus}
+    Оценим вероятность того что $ w \not\subset SAT $. Так как мы будем всегда попадать в if $(F(x_i)$ = 0), то $P(M(w)=1)$ = 0.5 \\
+    
+    Допустим, что теперь $ w \subset SAT $.
+    Пусть есть $k$ кортежей, которые удовлетворяют условию, тогда 
+    рассмотрим следующие вероятности: \\
+    $ P(M(v)=1$ | повезло) = 1  \\
+    $ P $(повезло) = $\frac{k}{2^n} $ \\
+    $ P(M(v)=1$ | не повезло) = 1 \\
+    $ P $(не повезло) = 1 \\
+    Используя формулу полной вероятности получаем: \\
+    $ P(M(w)=1) = \frac{k}{2^n} + (1 - \frac{k}{2^n})\frac{1}{2}$ > 0.5 \\
+    Это и доказывает, что $SAT$ лежит в $PP$
+    \end {proof-rus}
+    
+\end{frame}
+
+\begin{frame}
+    \begin{rmk}
+    Если алгоритм $M_{sat}$ выдает на выходе 1, это еще ничего не значит. Что бы это что-то значило, нужно провести статистически важное число испытаний. Другими словами, провести экспоненциальное число испытаний.
+    \end{rmk}
+    \begin{thm}
+    $ PP \subset PSPACE $
+    \end{thm}
+    \begin{proof-rus}
+    Нам надо показать: $ L \subset  PP \rightarrow L \subset  PSPACE $\\
+    Возьмем какой нибудь язык $ L \subset PP \rightarrow \exists M, w \in L \Leftrightarrow P(M(w)=1)>0.5$ и машина $M$ - полиномиальная \\
+    Хотим построить другую машину $M'$ - обычную ДМТ, которая вычисляет $ M'(w, M) = P(M(w)=1)$. Это можно сделать полным перебором с возвратом в классе $PSPACE$.
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    \begin{proof-rus-cont}
+    $M'$ - полиномиальна. Это означает, что количество ветвлений в любом случае будет не больше чем полином.
+    Перебор в глубину будет не более чем полиномиальный $\rightarrow$ полиномиальной памяти хватит чтобы сохранить одно состояние перебора. $M'$ работает за полиномиальную память $\rightarrow$ $ L \subset PSPACE $
+    \end{proof-rus-cont}
+    \begin{rmk}
+    В иерархии классов $PP$ лежит где-то между $NP$ и $PSPACE$
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    Введем правильное определение
+    \begin{dfn}
+        $ L \subset BPP : \exists M, w \in L \Leftrightarrow P(M(w)=1)>\frac{2}{3}$ и машина $M$ - полиномиальная.
+    \end{dfn}
+    \begin{rmk}
+        На самом деле вместо $\frac{2}{3}$ можно взять любое число больше $\frac{1}{2}$. Потому что при $k$ испытаниях вероятность ошибки изменится экспоненциально, а сложность запуска полиномиально.
+    \end{rmk}
+    Рассмотрим этот момент подробнее
+\end{frame}
+
+\begin{frame}
+    Допустим у нас есть $P(M(w)=1) \geq  \frac{1}{2} + k$. Надо перейти к $P(M(w)=1) \geq \frac{2}{3}$. Рассмотрим на примере 2-ух монет. \\
+    Есть 2 монеты: \\
+    Первая: \\
+        0.5 + p - веротятность выпадения орла \\
+        0.5 - p - веротятность выпадения решки \\
+    Соответствует случаю, когда $ w \subset L$ \\
+    Вторая: \\
+        0.5 - p - веротятность выпадения орла \\
+        0.5 + p - веротятность выпадения решки \\
+    Соответствует случаю, когда $ w \not\subset L$ \\
+    Как понять с какой монетой мы имеем дело?
+    \begin{rmk}
+        Кидая достаточное количество раз монетку мы можем сделать веротяность ошибки сколь угодно маленькую. Вероятность ошибиться падает экспоненциально
+    \end{rmk}
+        
+\end{frame}
+
+\begin{frame}
+    \begin{rmk}
+        Возникает вопрос: $BPP = PP$?(например мы можем запустить алгоритм Монте-Карло, подождать полиномиально долгое число бросков и получить ответ). Поэтому возможно $BPP = PP$, но до сих пор не известно. Тем не менее многие задачи из $BPP$ со временем оказывались в $P$ (важный пример - проверка простоты).
+    \end{rmk}
+    Существует хороший пример задачи, про которую известно, что она лежит в $BPP$ и на сегодняшний день неизвестно лежит ли в $P$. Это задача о проверке полинома на тождественное равенство нулю.
+\end{frame}
+
+\begin{frame}
+    \begin{prob-rus}
+        $P(x_1, ..., x_n)$ - полином от n пемененных, задан в виде произведения полиномов или как определитель полиномиальной матрицы. \\
+        Иначе говоря, полином задан таким образом, что мы не можем посчитать его коэффиценты(так как это будет полиномиальная задача). \\
+        Задача: проверить равен ли полином $P$ нулю тождественно.
+    \end{prob-rus}
+    \begin{rmk}
+        Никто пока не придумал детерминированного полиномиального алгоритма решения данной задачи.
+    \end{rmk}
+\end{frame}
+
+\begin{frame}
+    \begin{lsz}
+        Пусть есть ненулевой полином $F(x_1, ..., x_n)$. $d$ - его степень. $S$ - конечное случайное подмножество $R^n$. $R$ - случайно выбранный элемент $S$. Тогда $P(F(R)=0) \leq \frac{d}{|S|}$ (маловероятно).
+    \end{lsz}
+    \begin{proof-rus}
+        Будем доказывать индукцией по $n$. \\
+        База индукции. $n=1$ \\
+        $F(x_1)$ - полином от одной переменной. У него максимум $d$ корней. Сколько бы точек мы не взяли, максимум точек будет $d$ $\rightarrow$ $P(F(R)=0)=\frac{d}{|S|}$ и в частности $P(F(R)=0) \leq \frac{d}{|S|}$
+        
+    \end{proof-rus}
+\end{frame}
+
+\begin{frame}
+    \begin{proof-rus-cont}
+        Шаг индукции\\
+        $F$ можно представить в виде:
+        $F(x_1, ... , x_n) = \sum_{i=1}^d x_1^i \cdot F_i(x_2, ... , x_n)$ (берем $x_1$ и всюду выносим за скобки) \\
+        $F \neq 0 \rightarrow$(из условия) $\exists i: F_i \neq 0$\\
+        Выберем $i$ - максимальное из таких чисел: $i = max_{j} F_j \neq 0$.\\
+        $Fi$ - ненулевой полином и $x_1^i$ тоже не нулевой. \\
+        Выбираем случайное $R \subset S$ и оценим вероятность того, что $F(R) = 0$.
+        
+    \end{proof-rus-cont}
+\end{frame}
+
+\begin{frame}
+    \begin{proof-rus-cont}
+        Это может быть только в 2 случаях: когда $F_i = 0$ или когда $x_1^i = 0$\\
+        1) $P(F_i(R)=0) \leq \frac{d-i}{|s|}$ (так как можно применить предположение индукции) \\
+        2) $P(x_1^i(R) = 0) \leq \frac{i}{|s|}$\\
+        Так как выполняется либо (1) либо (2) получаем:\\
+        $P(F(R)=0)\leq \frac{d}{|s|}$
+    \end{proof-rus-cont}
+\end{frame}
+
+\begin{frame}
+    Про $BPP$ также известны следующие утверждения:
+    \begin{rmk}
+        $BPP \subset PP$ \\
+        $BPP \subset \sum^2P \cap П^2P$ \\
+        $P \cap BPP$
+    \end{rmk}
+\end{frame}
+
+\end{document}
